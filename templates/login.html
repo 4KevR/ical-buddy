@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{% if register == True %}Register{% else %}Login{% endif %}{% endblock %}
+{% block link%}
+<link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
+{% endblock %}
+{% block script%}
+<script src="{{url_for('static', filename='js/login.js')}}"></script>
+{% endblock %}
+{% block content %}
+<form onsubmit="login('{% if register %}register{% else %}login{% endif %}'); return false;">
+    <div class="form-floating my-3">
+        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username"
+               required="required"/>
+        <label for="username">Username</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+               required="required"/>
+        <label for="password">Password</label>
+    </div>
+    {% if register == True %}
+    <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="repeat_password" name="repeat_password"
+               placeholder="Repeat password" required="required"/>
+        <label for="repeat_password">Repeat password</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="otp" name="otp" placeholder="Enter OTP code"
+               required="required"/>
+        <label for="otp">OTP Code</label>
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<div class="toast-container bottom-0 start-50 translate-middle-x">
+    <div id="failedOperationToast" class="toast m-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">{% if register %}Registration failed{% else %}Login failed{% endif %}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="failedOperationToastBody" class="toast-body">
+        </div>
+    </div>
+</div>
+{% endblock %}
