@@ -1,5 +1,7 @@
 FROM python:3.8-slim-buster
 
+ARG initial_otp
+
 WORKDIR flask-server/
 
 COPY requirements.txt .
@@ -8,6 +10,7 @@ COPY models.py .
 COPY .env .
 COPY templates templates
 COPY static static
+COPY initialize_database.sh .
 
 RUN apt-get -y update \
     && apt-get -y upgrade \
@@ -19,5 +22,7 @@ RUN pip install --upgrade pip \
 RUN flask db init --directory ./migrations \
     && flask db migrate \
     && flask db upgrade
+
+RUN ./initialize_database.sh
 
 CMD ["python", "app.py"]

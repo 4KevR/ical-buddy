@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        initial_otp: "${INITIAL_OTP}"
     container_name: ical-buddy
     ports:
       - "127.0.0.1:5000:5000"

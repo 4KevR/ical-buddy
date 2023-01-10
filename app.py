@@ -196,6 +196,16 @@ def home():
     return make_response(redirect(url_for("login")))
 
 
+@app.route("/account", methods=["GET"])
+@jwt_required()
+def account():
+    current_user = get_jwt_identity()
+    db_user = User.query.filter_by(user_name=current_user).first()
+    if db_user:
+        return render_template("account.html", need_button="logout")
+    return make_response(redirect(url_for("login")))
+
+
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.html", register=False, need_button="register")

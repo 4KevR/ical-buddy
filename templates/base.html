@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
 
     {% block script %}{% endblock %}
-    <script src="{{url_for('static', filename='js/base.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
     {% block link %}{% endblock %}
-    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
@@ -32,32 +32,43 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <div class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+                {% if url_for(request.endpoint) not in ["/login", "/register"] %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/account">Account</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <div class="nav-item d-flex flex-row">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle me-3" type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        Theme
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" data-bs-theme-value="light" href="#">Light</a></li>
+                        <li><a class="dropdown-item" data-bs-theme-value="dark" href="#">Dark</a></li>
+                        <li><a class="dropdown-item" data-bs-theme-value="auto" href="#">Auto</a></li>
+                    </ul>
+                </div>
+                {% if need_button == "logout" %}
+                    <form method="post" action="/api/logout">
+                        <button class="btn btn-outline-secondary" type="submit">Logout</button>
+                    </form>
+                {% elif need_button == "register" %}
+                    <form method="get" action="/register">
+                        <button class="btn btn-outline-secondary" type="submit">Register</button>
+                    </form>
+                {% elif need_button == "login" %}
+                    <form method="get" action="/login">
+                        <button class="btn btn-outline-secondary" type="submit">Login</button>
+                    </form>
+                {% endif %}
             </div>
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle me-3" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                    Theme
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" data-bs-theme-value="light" href="#">Light</a></li>
-                    <li><a class="dropdown-item" data-bs-theme-value="dark" href="#">Dark</a></li>
-                    <li><a class="dropdown-item" data-bs-theme-value="auto" href="#">Auto</a></li>
-                </ul>
-            </div>
-            {% if need_button == "logout" %}
-            <form method="post" action="/api/logout">
-                <button class="btn btn-outline-secondary" type="submit">Logout</button>
-            </form>
-            {% elif need_button == "register" %}
-            <form method="get" action="/register">
-                <button class="btn btn-outline-secondary" type="submit">Register</button>
-            </form>
-            {% elif need_button == "login" %}
-            <form method="get" action="/login">
-                <button class="btn btn-outline-secondary" type="submit">Login</button>
-            </form>
-            {% endif %}
         </div>
     </div>
 </nav>
