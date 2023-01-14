@@ -1,12 +1,13 @@
 version: "3"
 
 services:
-  i_cal_duplicator:
+  ical-buddy:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         initial_otp: "${INITIAL_OTP}"
+    image: ical-buddy
     container_name: ical-buddy
     ports:
       - "127.0.0.1:5000:5000"

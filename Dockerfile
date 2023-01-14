@@ -13,6 +13,7 @@ COPY templates templates
 COPY static static
 COPY initialize_database.sh .
 COPY container_start_script.sh .
+COPY wsgi.py .
 
 RUN apt-get -y update \
     && apt-get -y upgrade \

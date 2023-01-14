@@ -35,7 +35,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
+            <ul class="navbar-nav mb-2 mb-lg-0 ms-lg-3 d-flex align-items-center">
                 {% if url_for(request.endpoint) not in ["/login", "/register"] %}
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
@@ -84,5 +84,4 @@
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
 </body>
-
 </html>

@@ -62,8 +62,9 @@ async function changePassword() {
 
 async function removeCode(button) {
     const list_element = button.parentNode;
+    const remove_code = list_element.children[0].innerText.split("\n")[0];
     const body = {
-        "remove_code": list_element.children[0].innerText,
+        "remove_code": remove_code,
     };
     const response = await sendRequest('/api/removeCode', body);
     if (response.ok) {

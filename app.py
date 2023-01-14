@@ -21,7 +21,7 @@ app.config["STATIC_FOLDER"] = "static"
 app.config["TEMPLATES_FOLDER"] = "templates"
 
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
-app.config["JWT_COOKIE_SECURE"] = os.environ["JWT_COOKIE_SECURE"]
+app.config["JWT_COOKIE_SECURE"] = True if os.environ["JWT_COOKIE_SECURE"] == "True" else False
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 

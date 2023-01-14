@@ -1,4 +1,6 @@
 # ical-buddy
+***Work in progress - expect bugs***
+
 Do you subscribe to ICal calendars that contain parts of information that you don't need?
 
 If that's the case, the ical-buddy can assist you. It's a tool ready to be self-hosted on a server with Docker available, and it demonstrates the power of vanilla Bootstrap 5.
