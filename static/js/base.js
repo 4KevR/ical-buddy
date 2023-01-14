@@ -28,6 +28,12 @@
     setTheme(getPreferredTheme())
 
     const showActiveTheme = theme => {
+        if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.querySelector('#lordIcon').setAttribute('colors', 'primary:#b4b4b4')
+        } else {
+            document.querySelector('#lordIcon').setAttribute('colors', theme === 'dark' ? 'primary:#b4b4b4' : 'primary:#000000');
+        }
+
         const activeThemeIcon = document.querySelector('.theme-icon-active use')
         const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
         // const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
@@ -67,6 +73,25 @@ function addValidityListenerOnce(element) {
     element.addEventListener("input", function () {
         element.setCustomValidity("");
     }, {once: true});
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+async function sendRequest(url, body) {
+    const options = {
+        method: 'post',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    };
+    return await fetch(url, options);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

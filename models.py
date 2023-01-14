@@ -11,7 +11,7 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(100), unique=True)
     password_hash = db.Column(db.String)
-    admin_role = db.Column(db.Boolean)
+    is_admin = db.Column(db.Boolean)
 
     i_cal_profiles = relationship("ICalProfile")
 
@@ -49,4 +49,5 @@ class OTPCode(db.Model):
 
     code_id = db.Column(db.Integer, primary_key=True)
     code_value = db.Column(db.Integer, unique=True)
-    code_used = db.Column(db.Boolean)
+    code_used = db.Column(db.Boolean, default=False)
+    for_admin = db.Column(db.Boolean)

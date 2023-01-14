@@ -1,119 +1,125 @@
 {% extends "base.html" %}
 {% block title %}iCal buddy{% endblock %}
-{% block link%}
-<link rel="stylesheet" href="{{url_for('static', filename='css/index.css')}}">
+{% block link %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
-{% block script%}
-<script src="{{url_for('static', filename='js/index.js')}}"></script>
+{% block script %}
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}
 {% block content %}
-<h1 class="my-3">Hello {{ user_name }}</h1>
-<div class="accordion" id="filter_accordion">
-    {% for index, profile in filter_list %}
-    <div class="accordion-item">
-        <div class="accordion-header" id="heading-{{ index }}">
-            <button class="accordion-button collapsed" type="button" id="heading-button-{{ index }}"
-                    data-bs-toggle="collapse" data-bs-target="#collapse-{{ index }}" aria-expanded="false"
-                    aria-controls="collapse-{{ index }}">
-                {{ profile.profile_name }}
-            </button>
-        </div>
-        <div id="collapse-{{ index }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ index }}"
-             data-bs-parent="#filter_accordion">
-            <div class="accordion-body">
-                <h2>General information</h2>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend w-25">
-                        <span class="input-group-text w-100" id="profile-name-{{ index }}">Profile name</span>
-                    </div>
-                    <input type="text" class="form-control" id="input-name-{{ index }}" aria-label="profile-name"
-                           value="{{ profile.profile_name }}" readonly="readonly">
+    <h1 class="my-3">Hello {{ user_name }}</h1>
+    <div class="accordion" id="filter_accordion">
+        {% for index, profile in filter_list %}
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading-{{ index }}">
+                    <button class="accordion-button collapsed" type="button" id="heading-button-{{ index }}"
+                            data-bs-toggle="collapse" data-bs-target="#collapse-{{ index }}" aria-expanded="false"
+                            aria-controls="collapse-{{ index }}">
+                        {{ profile.profile_name }}
+                    </button>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend w-25">
-                        <span class="input-group-text w-100" id="ical-url-{{ index }}">ICal URL</span>
+                <div id="collapse-{{ index }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ index }}"
+                     data-bs-parent="#filter_accordion">
+                    <div class="accordion-body">
+                        <h2>General information</h2>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="profile-name-{{ index }}">Profile name</span>
+                            </div>
+                            <input type="text" class="form-control" id="input-name-{{ index }}"
+                                   aria-label="profile-name"
+                                   value="{{ profile.profile_name }}" readonly="readonly">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="ical-url-{{ index }}">ICal URL</span>
+                            </div>
+                            <input type="text" class="form-control" id="input-ical-{{ index }}" aria-label="ical-url"
+                                   value="{{ profile.i_cal_url }}" readonly="readonly">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="public-token-{{ index }}">Public token</span>
+                            </div>
+                            <input type="text" class="form-control" id="input-token-{{ index }}"
+                                   aria-label="public-token"
+                                   value="{{ profile.token }}" readonly="readonly">
+                            <button class="btn btn-outline-secondary"
+                                    onclick="copyTokenURL(this, '{{ profile.token }}')"><i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary w-100 mb-5"
+                                id="general-edit-button-{{ index }}"
+                                onclick="activateChange(this, '{{ index }}')"><i class="bi bi-pencil"></i></button>
+                        <h2>Filtered elements</h2>
+                        <ul class="list-group">
+                            {% for word in filter_word_list[index] %}
+                                <li class="list-group-item d-flex" id="filter-word-{{ index }}">
+                                    <div class="flex-grow-1 d-flex align-items-center">{{ word.content }}</div>
+                                    <button type="button" id="filter-remove-button-{{ index }}"
+                                            onclick="submitChange(this, '{{ index }}')" class="btn btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i></button>
+                                </li>
+                            {% endfor %}
+                            <li class="list-group-item d-flex">
+                                <button type="button" id="filter-add-button-{{ index }}"
+                                        class="btn btn-outline-secondary flex-grow-1"
+                                        onclick="activateChange(this, '{{ index }}')"><i class="bi bi-plus-circle"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <button type="button" class="btn btn-outline-secondary w-100 mt-5"
+                                onclick="deleteProfile('{{ index }}')">Delete profile
+                        </button>
                     </div>
-                    <input type="text" class="form-control" id="input-ical-{{ index }}" aria-label="ical-url"
-                           value="{{ profile.i_cal_url }}" readonly="readonly">
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend w-25">
-                        <span class="input-group-text w-100" id="public-token-{{ index }}">Public token</span>
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#newProfileModal">
+        Add new profile
+    </button>
+
+    <div class="modal fade" id="newProfileModal" tabindex="-1" aria-labelledby="newProfileModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="newProfile(); return false;">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="newProfileModalLabel">New profile</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Dismiss"
+                                onclick="clearModal()"></button>
                     </div>
-                    <input type="text" class="form-control" id="input-token-{{ index }}" aria-label="public-token"
-                           value="{{ profile.token }}" readonly="readonly">
-                    <button class="btn btn-outline-secondary" onclick="copyTokenURL(this, '{{ profile.token }}')"><i class="bi bi-clipboard"></i></button>
-                </div>
-                <button type="button" class="btn btn-outline-secondary w-100 mb-5" id="general-edit-button-{{ index }}"
-                        onclick="activateChange(this, '{{ index }}')"><i class="bi bi-pencil"></i></button>
-                <h2>Filtered elements</h2>
-                <ul class="list-group">
-                    {% for word in filter_word_list[index] %}
-                    <li class="list-group-item d-flex" id="filter-word-{{ index }}">
-                        <div class="flex-grow-1 d-flex align-items-center">{{ word.content }}</div>
-                        <button type="button" id="filter-remove-button-{{ index }}"
-                                onclick="submitChange(this, '{{ index }}')" class="btn btn-outline-danger"><i
-                                class="bi bi-x-circle"></i></button>
-                    </li>
-                    {% endfor %}
-                    <li class="list-group-item d-flex">
-                        <button type="button" id="filter-add-button-{{ index }}"
-                                class="btn btn-outline-secondary flex-grow-1"
-                                onclick="activateChange(this, '{{ index }}')"><i class="bi bi-plus-circle"></i></button>
-                    </li>
-                </ul>
-                <button type="button" class="btn btn-outline-secondary w-100 mt-5"
-                        onclick="deleteProfile('{{ index }}')">Delete profile
-                </button>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="new-profile-name">Profile name</span>
+                            </div>
+                            <input type="text" class="form-control" id="new-input-name" aria-label="profile-name"
+                                   placeholder="Enter profile name" required="required">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="new-ical-url">ICal URL</span>
+                            </div>
+                            <input type="text" class="form-control" id="new-input-ical" aria-label="ical-url"
+                                   placeholder="Enter ICal URL" required="required">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="new-public-token">Public token</span>
+                            </div>
+                            <input type="text" class="form-control" id="new-input-token" aria-label="public-token"
+                                   placeholder="Enter desired public token" required="required">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearModal()">
+                            Dismiss
+                        </button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    {% endfor %}
-</div>
-<button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#newProfileModal">
-    Add new profile
-</button>
-
-<div class="modal fade" id="newProfileModal" tabindex="-1" aria-labelledby="newProfileModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form onsubmit="newProfile(); return false;">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="newProfileModalLabel">New profile</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Dismiss"
-                            onclick="clearModal()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend w-25">
-                            <span class="input-group-text w-100" id="new-profile-name">Profile name</span>
-                        </div>
-                        <input type="text" class="form-control" id="new-input-name" aria-label="profile-name"
-                               placeholder="Enter profile name" required="required">
-                    </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend w-25">
-                            <span class="input-group-text w-100" id="new-ical-url">ICal URL</span>
-                        </div>
-                        <input type="text" class="form-control" id="new-input-ical" aria-label="ical-url"
-                               placeholder="Enter ICal URL" required="required">
-                    </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend w-25">
-                            <span class="input-group-text w-100" id="new-public-token">Public token</span>
-                        </div>
-                        <input type="text" class="form-control" id="new-input-token" aria-label="public-token"
-                               placeholder="Enter desired public token" required="required">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearModal()">
-                        Dismiss
-                    </button>
-                    <button type="submit" class="btn btn-primary">Create</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 {% endblock %}

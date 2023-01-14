@@ -1,5 +1,5 @@
 #!/bin/sh
 
 sqlite3 ./instance/database.db <<EOF
-INSERT INTO OTP_CODE(code_value) VALUES("$initial_otp");
+INSERT INTO OTP_CODE(code_value, for_admin) VALUES("$initial_otp", true);
 EOF

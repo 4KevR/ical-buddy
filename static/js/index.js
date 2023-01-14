@@ -11,15 +11,9 @@ function activateChange(obj, index) {
         input_name.readOnly = input_ical.readOnly = input_token.readOnly = false;
         obj.innerHTML = "<i class='bi bi-check-circle'></i>";
         obj.onclick = function () {
-            submitChange(obj, index)
+            submitChange(obj, index);
         };
     }
-}
-
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
 async function submitChange(obj, index) {
@@ -110,19 +104,6 @@ async function deleteProfile(index) {
     }
 }
 
-async function sendRequest(url, body) {
-    const options = {
-        method: 'post',
-        credentials: 'same-origin',
-        headers: {
-            'X-CSRF-TOKEN': getCookie('csrf_access_token'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-    };
-    return await fetch(url, options);
-}
-
 function copyTokenURL(element, token) {
     function returnToInitial() {
         element.innerHTML = "<i class='bi bi-clipboard'></i>";
@@ -131,7 +112,7 @@ function copyTokenURL(element, token) {
         element.classList.add("btn-outline-secondary");
     }
 
-    const textToCopy = location.href.split('?')[0] + `filtered/${token}`;
+    const textToCopy = location.href.split('?')[0].split('#')[0] + `filtered/${token}`;
     navigator.clipboard.writeText(textToCopy)
         .then(() => {
             element.innerHTML = "<i class='bi bi-clipboard-check'></i>";

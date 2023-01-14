@@ -85,7 +85,7 @@ def api_register():
             existing_user = User.query.filter_by(user_name=user_name).first()
             if existing_user:
                 return jsonify({"msg": "Username exists"}), 401
-            new_user = User(user_name=user_name, admin_role=False)
+            new_user = User(user_name=user_name, is_admin=db_code.for_admin)
             new_user.set_password(password)
             db.session.add(new_user)
             db_code.code_used = True
@@ -103,7 +103,7 @@ def api_logout():
 
 @app.route("/api/changeProfile", methods=["POST"])
 @jwt_required()
-def change_profile():
+def api_change_profile():
     current_user = get_jwt_identity()
     db_user = User.query.filter_by(user_name=current_user).first()
 
@@ -136,7 +136,7 @@ def change_profile():
 
 @app.route("/api/newProfile", methods=["POST"])
 @jwt_required()
-def new_profile():
+def api_new_profile():
     current_user = get_jwt_identity()
     db_user = User.query.filter_by(user_name=current_user).first()
     new_profile_data = request.json
@@ -157,7 +157,7 @@ def new_profile():
 
 @app.route("/api/deleteProfile", methods=["POST"])
 @jwt_required()
-def delete_profile():
+def api_delete_profile():
     current_user = get_jwt_identity()
     db_user = User.query.filter_by(user_name=current_user).first()
 
@@ -169,6 +169,92 @@ def delete_profile():
 
     db.session.commit()
     return jsonify({"msg": "Deleted profile"}), 200
+
+
+@app.route("/api/changeUsername", methods=["POST"])
+@jwt_required()
+def api_change_username():
+    current_user = get_jwt_identity()
+    db_user = User.query.filter_by(user_name=current_user).first()
+
+    if db_user:
+        new_user_name = request.json["new_user_name"]
+        if db_user.user_name == new_user_name:
+            return jsonify({"msg": "Already your username"}), 401
+        existing_user_name = User.query.filter_by(user_name=new_user_name).first()
+        if existing_user_name:
+            return jsonify({"msg": "Username exists"}), 401
+        db_user.user_name = new_user_name
+        db.session.commit()
+        return api_logout()
+    return jsonify({"msg": "Operation failed"}), 401
+
+
+@app.route("/api/changePassword", methods=["POST"])
+@jwt_required()
+def api_change_password():
+    current_user = get_jwt_identity()
+    db_user_query = User.query.filter_by(user_name=current_user)
+    db_user = db_user_query.first()
+
+    if db_user:
+        request_data = request.json
+        if not db_user.check_password(request_data["old_password"]):
+            return jsonify({"msg": "Wrong old password"}), 401
+        db_user.set_password(request_data["new_password"])
+        db.session.commit()
+        return jsonify({"msg": "Change successful"}), 200
+    return jsonify({"msg": "Operation failed"}), 401
+
+
+@app.route("/api/removeCode", methods=["POST"])
+@jwt_required()
+def api_remove_code():
+    current_user = get_jwt_identity()
+    db_user = User.query.filter_by(user_name=current_user).first()
+
+    if db_user.is_admin:
+        code_to_remove = request.json["remove_code"]
+        OTPCode.query.filter_by(code_value=code_to_remove).delete(synchronize_session=False)
+        db.session.commit()
+        return jsonify({"msg": "Code removed"}), 200
+    return jsonify({"msg": "Not authorized"}), 401
+
+
+@app.route("/api/addCode", methods=["POST"])
+@jwt_required()
+def api_add_code():
+    current_user = get_jwt_identity()
+    db_user = User.query.filter_by(user_name=current_user).first()
+
+    if db_user.is_admin:
+        request_data = request.json
+        existing_code = OTPCode.query.filter_by(code_value=request_data["new_code"]).first()
+        if existing_code:
+            return jsonify({"msg": "Code exists"}), 401
+        new_code = OTPCode(code_value=request_data["new_code"], for_admin=request_data["for_admin"])
+        db.session.add(new_code)
+        db.session.commit()
+        return jsonify({"msg": "Code added"}), 200
+    return jsonify({"msg": "Not authorized"}), 401
+
+
+@app.route("/api/deleteAccount", methods=["POST"])
+@jwt_required()
+def api_delete_account():
+    current_user = get_jwt_identity()
+    db_user_query = User.query.filter_by(user_name=current_user)
+    db_user = db_user_query.first()
+
+    if db_user:
+        profile_query = ICalProfile.query.filter_by(user_id=db_user.user_id)
+        all_profile_ids = [profile.profile_id for profile in profile_query.all()]
+        FilterWord.query.filter(FilterWord.profile_id.in_(all_profile_ids)).delete(synchronize_session=False)
+        profile_query.delete(synchronize_session=False)
+        db_user_query.delete(synchronize_session=False)
+        db.session.commit()
+        return api_logout()
+    return jsonify({"msg": "Operation failed"}), 401
 
 
 @app.route("/filtered/<token>")
@@ -202,7 +288,9 @@ def account():
     current_user = get_jwt_identity()
     db_user = User.query.filter_by(user_name=current_user).first()
     if db_user:
-        return render_template("account.html", need_button="logout")
+        all_codes = OTPCode.query.filter_by(code_used=False).all()
+        return render_template("account.html", user_name=db_user.user_name, admin=db_user.is_admin, all_codes=all_codes,
+                               need_button="logout")
     return make_response(redirect(url_for("login")))
 
 

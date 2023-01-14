@@ -17,22 +17,25 @@
 </head>
 
 <body id="idBody">
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <script src="https://cdn.lordicon.com/fudrjiwc.js"></script>
         <lord-icon
+                id="lordIcon"
                 src="https://cdn.lordicon.com/qtxqkhzr.json"
                 trigger="hover"
                 style="width:40px;height:40px"
                 class="me-1">
         </lord-icon>
-        <a class="navbar-brand" href="/">iCal buddy</a>
+        <a class="navbar-brand me-0 me-lg-16" href="/">
+            <div class="justify-self-center">iCal buddy</div>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+            <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
                 {% if url_for(request.endpoint) not in ["/login", "/register"] %}
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
@@ -42,9 +45,10 @@
                     </li>
                 {% endif %}
             </ul>
-            <div class="nav-item d-flex flex-row">
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle me-3" type="button"
+            <div class="nav-item d-flex justify-content-center flex-fill">
+                <div class="flex-lg-fill"></div>
+                <div class="dropdown me-1">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
                         Theme
@@ -56,15 +60,15 @@
                     </ul>
                 </div>
                 {% if need_button == "logout" %}
-                    <form method="post" action="/api/logout">
+                    <form class="ms-1" method="post" action="/api/logout">
                         <button class="btn btn-outline-secondary" type="submit">Logout</button>
                     </form>
                 {% elif need_button == "register" %}
-                    <form method="get" action="/register">
+                    <form class="ms-1" method="get" action="/register">
                         <button class="btn btn-outline-secondary" type="submit">Register</button>
                     </form>
                 {% elif need_button == "login" %}
-                    <form method="get" action="/login">
+                    <form class="ms-1" method="get" action="/login">
                         <button class="btn btn-outline-secondary" type="submit">Login</button>
                     </form>
                 {% endif %}

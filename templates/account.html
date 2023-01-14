@@ -1,12 +1,97 @@
 {% extends "base.html" %}
 {% block title %}Account{% endblock %}
-{% block link%}
-<link rel="stylesheet" href="{{url_for('static', filename='css/account.css')}}">
+{% block link %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
-{% block script%}
-<script src="{{url_for('static', filename='js/account.js')}}"></script>
+{% block script %}
+    <script src="{{ url_for('static', filename='js/account.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <h1>Change Profile</h1>
-    <h1><a class="text-body" href="https://youtu.be/siwpn14IE7E?t=28" target="_blank">Danger Zone</a></h1>
+    <h1 class="my-3">Account settings</h1>
+    <h2>Change username</h2>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="change-user-name">Username</span>
+        </div>
+        <input type="text" class="form-control" id="input-change-user-name" aria-label="user-name"
+               value="{{ user_name }}" readonly="readonly" required="required">
+    </div>
+    <button class="btn btn-primary" id="button-user-name-change" onclick="activateUsernameChange();">Edit</button>
+    <h2 class="mt-3">Change Password</h2>
+    <form id="change-password-form" onsubmit="changePassword(); return false;">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="old-password">Old password</span>
+            </div>
+            <input type="password" class="form-control" id="input-old-password" aria-label="old-password"
+                   value="" required="required">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="new-password">New password</span>
+            </div>
+            <input type="password" class="form-control" id="input-new-password" aria-label="new-password"
+                   value="" required="required">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="repeat-new-password">Repeat new password</span>
+            </div>
+            <input type="password" class="form-control" id="input-repeat-new-password" aria-label="repeat-new-password"
+                   value="" required="required">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% if admin %}
+        <h2 class="mt-3">OTP code management</h2>
+        <ul class="list-group">
+            {% for code in all_codes %}
+                <li class="list-group-item d-flex">
+                    <div class="d-flex align-items-center">{{ code.code_value }}
+                        {% if code.for_admin %}
+                            <span class="badge rounded-pill text-bg-primary ms-2">Admin</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1"></div>
+                    <button type="button" onclick="removeCode(this)" class="btn btn-outline-danger"><i
+                            class="bi bi-x-circle"></i></button>
+                </li>
+            {% endfor %}
+            <li class="list-group-item d-flex">
+                <button type="button" id="filter-add-button-{{ index }}"
+                        class="btn btn-outline-secondary flex-grow-1"
+                        onclick="createCode(this)"><i class="bi bi-plus-circle"></i>
+                </button>
+            </li>
+        </ul>
+    {% endif %}
+    <h2 id="danger-zone" class="mt-3">Danger Zone</h2>
+    <button type="button" class="btn btn-outline-danger my-2" data-bs-toggle="modal"
+            data-bs-target="#deleteProfileModal">
+        Delete account
+    </button>
+
+    <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="deleteAccount(); return false;">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="newProfileModalLabel">Delete account</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Dismiss"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete your account?</p>
+                        <b>This action cannot be undone.</b>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Dismiss
+                        </button>
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}
