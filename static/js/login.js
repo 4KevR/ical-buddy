@@ -1,6 +1,9 @@
 async function login(register) {
     const input_username = document.querySelector("#username");
     const input_password = document.querySelector("#password");
+    const login_register_button = document.querySelector("#loginRegisterSubmitButton");
+
+    login_register_button.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
 
     const body = {
         "username": input_username.value,
@@ -31,6 +34,7 @@ async function login(register) {
     if (response.ok) {
         location.href = response.url;
     } else {
+        login_register_button.innerHTML = `Submit`;
         const toastBody = document.querySelector("#failedOperationToastBody");
         const msg = (await response.json())["msg"]
         if (msg === "Invalid OTP") {

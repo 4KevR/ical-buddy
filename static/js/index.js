@@ -45,19 +45,30 @@ async function submitChange(obj, index) {
         const input_name = document.querySelector("#input-name-" + index);
         const input_ical = document.querySelector("#input-ical-" + index);
         const input_token = document.querySelector("#input-token-" + index);
-        input_name.readOnly = input_ical.readOnly = input_token.readOnly = true;
-        obj.innerHTML = "<i class=\"bi bi-pencil\"></i>";
-        obj.onclick = function () {
-            activateChange(obj, index)
-        };
         body["profile_name"] = input_name.value;
         body["i_cal_url"] = input_ical.value;
         body["token"] = input_token.value;
+        obj.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
         const response = await sendRequest('/api/changeProfile', body);
         if (response.ok) {
+            input_name.readOnly = input_ical.readOnly = input_token.readOnly = true;
+            obj.innerHTML = "<i class=\"bi bi-pencil\"></i>";
+            obj.onclick = function () {
+                activateChange(obj, index);
+            };
             if (input_name_original.innerText !== input_name.value) {
                 input_name_original.innerText = input_name.value;
             }
+        } else {
+            obj.innerHTML = "<i class='bi bi-check-circle'></i>";
+            const msg = (await response.json())["msg"]
+            if (msg === "Invalid url") {
+                input_ical.setCustomValidity("URL is invalid");
+                addValidityListenerOnce(input_ical);
+            } else if (msg === "Invalid token") {
+                input_token.setCustomValidity("Token contains invalid characters");
+                addValidityListenerOnce(input_token);
+            } 
         }
     }
 }
@@ -66,22 +77,31 @@ async function newProfile() {
     const new_input_name = document.querySelector("#new-input-name");
     const new_input_ical = document.querySelector("#new-input-ical");
     const new_input_token = document.querySelector("#new-input-token");
+    const create_profile_button = document.querySelector("#createProfileModalButton");
 
     const body = {
         "new_profile_name": new_input_name.value,
         "new_ical_url": new_input_ical.value,
         "new_token": new_input_token.value,
     };
+    create_profile_button.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
     const response = await sendRequest('/api/newProfile', body);
     if (response.ok) {
         location.reload();
     } else {
+        create_profile_button.innerHTML = `Create`;
         const msg = (await response.json())["msg"]
         if (msg === "Name exists") {
             new_input_name.setCustomValidity("Profile name already exists");
             addValidityListenerOnce(new_input_name);
         } else if (msg === "Token exists") {
             new_input_token.setCustomValidity("Token is already taken");
+            addValidityListenerOnce(new_input_token);
+        } else if (msg === "Invalid url") {
+            new_input_ical.setCustomValidity("URL is invalid");
+            addValidityListenerOnce(new_input_ical);
+        } else if (msg === "Invalid token") {
+            new_input_token.setCustomValidity("Token contains invalid characters");
             addValidityListenerOnce(new_input_token);
         }
     }

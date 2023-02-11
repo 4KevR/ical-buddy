@@ -15,3 +15,8 @@ services:
     env_file:
       - .env
     tty: true
+    volumes:
+      - ical-buddy:/flask-server/instance
+
+volumes:
+  ical-buddy:

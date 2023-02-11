@@ -15,10 +15,12 @@ async function changeUsername() {
     const body = {
         "new_user_name": input_new_user_name.value
     };
+    button.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
     const response = await sendRequest("/api/changeUsername", body);
     if (response.ok) {
         location.href = response.url;
     } else {
+        button.innerHTML = `Submit`;
         const msg = (await response.json())["msg"];
         if (msg === "Username exists") {
             input_new_user_name.setCustomValidity("The username is already taken");
@@ -38,6 +40,7 @@ async function changePassword() {
     const old_password = document.querySelector("#input-old-password");
     const new_password = document.querySelector("#input-new-password");
     const new_password_repeat = document.querySelector("#input-repeat-new-password");
+    const passwordChangeButton = document.querySelector("#passwordSubmitButton"); 
     if (new_password.value !== new_password_repeat.value) {
         new_password_repeat.setCustomValidity("The passwords do not match");
         addValidityListenerOnce(new_password_repeat);
@@ -47,7 +50,9 @@ async function changePassword() {
         "old_password": old_password.value,
         "new_password": new_password.value,
     };
+    passwordChangeButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
     const response = await sendRequest("/api/changePassword", body);
+    passwordChangeButton.innerHTML = `Submit`;
     if (response.ok) {
         document.querySelector('#change-password-form').reset();
     } else {
@@ -100,6 +105,8 @@ async function submitCode(button) {
 }
 
 async function deleteAccount() {
+    const delete_account_button = document.querySelector("#deleteAccountModalButton");
+    delete_account_button.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
     const response = await sendRequest("/api/deleteAccount", {});
     if (response.ok) {
         location.href = response.url;

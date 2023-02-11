@@ -32,7 +32,7 @@
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="ical-url-{{ index }}">ICal URL</span>
+                                <span class="input-group-text" id="ical-url-{{ index }}">iCal URL</span>
                             </div>
                             <input type="text" class="form-control" id="input-ical-{{ index }}" aria-label="ical-url"
                                    value="{{ profile.i_cal_url }}" readonly="readonly">
@@ -99,10 +99,10 @@
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="new-ical-url">ICal URL</span>
+                                <span class="input-group-text" id="new-ical-url">iCal URL</span>
                             </div>
                             <input type="text" class="form-control" id="new-input-ical" aria-label="ical-url"
-                                   placeholder="Enter ICal URL" required="required">
+                                   placeholder="Enter iCal URL" required="required">
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
@@ -116,7 +116,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearModal()">
                             Dismiss
                         </button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button id="createProfileModalButton" type="submit" class="btn btn-primary" style="min-width: 6rem;">Create</button>
                     </div>
                 </form>
             </div>
