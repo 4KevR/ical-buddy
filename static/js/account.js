@@ -62,7 +62,7 @@ async function changePassword() {
 
 async function removeCode(button) {
     const list_element = button.parentNode;
-    const remove_code = list_element.children[0].innerText.split("\n")[0];
+    const remove_code = list_element.children[0].innerHTML.split("\n")[0];
     const body = {
         "remove_code": remove_code,
     };
@@ -73,7 +73,7 @@ async function removeCode(button) {
 }
 
 function createCode(button) {
-    button.parentNode.insertAdjacentHTML("beforebegin", `<li class='list-group-item d-flex'><input type='text' class='form-control w-50' aria-label='new-otp-code' placeholder='Enter new OTP code'/><select class="form-select w-25"><option value="0" selected>Not Admin</option><option value="1">Admin</option></select><div class='flex-grow-1'></div><button type='button' onclick=\"submitCode(this)\" class='btn btn-outline-success me-2'><i class='bi bi-check-circle'></i></button><button type='button' onclick=\"this.parentNode.parentNode.removeChild(this.parentNode)\" class='btn btn-outline-danger'><i class='bi bi-x-circle'></i></button></li>`);
+    button.parentNode.insertAdjacentHTML("beforebegin", `<li class='list-group-item d-flex align-items-center'><input type='text' class='form-control flex-grow-1 me-2' aria-label='new-otp-code' placeholder='Enter new OTP code'/><select class="form-select w-25 me-2"><option value="0" selected>Not Admin</option><option value="1">Admin</option></select><div class='flex-grow-1'></div><button type='button' onclick=\"submitCode(this)\" class='btn btn-outline-success me-2'><i class='bi bi-check-circle'></i></button><button type='button' onclick=\"this.parentNode.parentNode.removeChild(this.parentNode)\" class='btn btn-outline-danger'><i class='bi bi-x-circle'></i></button></li>`);
 }
 
 async function submitCode(button) {
@@ -87,11 +87,11 @@ async function submitCode(button) {
     };
     const response = await sendRequest('/api/addCode', body);
     if (response.ok) {
-        let newInnerHTML = `<div class="d-flex align-items-center">${new_code}`;
+        let newInnerHTML = `<div class="text-break me-2">${new_code}`;
         if (for_admin) {
-            newInnerHTML += `<span class="badge rounded-pill text-bg-primary ms-2">Admin</span>`;
+            newInnerHTML += `\n<span class="badge rounded-pill text-bg-primary ms-2">Admin</span>`;
         }
-        newInnerHTML += `</div><div class="flex-grow-1"></div><button type="button" onclick="removeCode(this)" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i></button>`;
+        newInnerHTML += `</div><div class="flex-grow-1"></div><button type="button" onclick="removeCode(this)" class="btn btn-outline-danger" style="height: 38px; width: 42px;"><i class="bi bi-x-circle"></i></button>`;
         list_element.innerHTML = newInnerHTML;
     } else {
         new_code_input.setCustomValidity("OTP code already exists or existed in the past");

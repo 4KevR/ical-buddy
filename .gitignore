@@ -2,3 +2,5 @@ instance/
 migrations/
 .env
 .idea
+__pycache__/
+ical-buddy-env/

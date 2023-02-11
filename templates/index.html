@@ -45,7 +45,7 @@
                                    aria-label="public-token"
                                    value="{{ profile.token }}" readonly="readonly">
                             <button class="btn btn-outline-secondary"
-                                    onclick="copyTokenURL(this, '{{ profile.token }}')"><i class="bi bi-clipboard"></i>
+                                    onclick="copyTokenURL(this, '{{ index }}')"><i class="bi bi-clipboard"></i>
                             </button>
                         </div>
                         <button type="button" class="btn btn-outline-secondary w-100 mb-5"
@@ -54,10 +54,10 @@
                         <h2>Filtered elements</h2>
                         <ul class="list-group">
                             {% for word in filter_word_list[index] %}
-                                <li class="list-group-item d-flex" id="filter-word-{{ index }}">
-                                    <div class="flex-grow-1 d-flex align-items-center">{{ word.content }}</div>
+                                <li class="list-group-item d-flex align-items-center" id="filter-word-{{ index }}">
+                                    <div class="flex-grow-1 text-break me-2">{{ word.content }}</div>
                                     <button type="button" id="filter-remove-button-{{ index }}"
-                                            onclick="submitChange(this, '{{ index }}')" class="btn btn-outline-danger">
+                                            onclick="submitChange(this, '{{ index }}')" class="btn btn-outline-danger" style="height: 38px; width: 42px;">
                                         <i class="bi bi-x-circle"></i></button>
                                 </li>
                             {% endfor %}
@@ -76,7 +76,7 @@
             </div>
         {% endfor %}
     </div>
-    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#newProfileModal">
+    <button type="button" class="btn btn-primary my-4" data-bs-toggle="modal" data-bs-target="#newProfileModal">
         Add new profile
     </button>
 

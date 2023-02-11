@@ -2,7 +2,7 @@ let tempElement = 0;
 
 function activateChange(obj, index) {
     if (obj.id.includes("filter-add-button")) {
-        obj.parentNode.insertAdjacentHTML("beforebegin", `<li class='list-group-item d-flex' id='new-filter-word-${tempElement}'><input type='text' class='form-control w-75' id='new-filter-word-input-${tempElement}' aria-label='new-filter-element' placeholder='Enter new filter element'/><div class='flex-grow-1'></div><button type='button' id='new-filter-add-button-${tempElement}' onclick=\"submitChange(this, ${index})\" class='btn btn-outline-success me-2'><i class='bi bi-check-circle'></i></button><button type='button' onclick=\"this.parentNode.parentNode.removeChild(this.parentNode)\" class='btn btn-outline-danger'><i class='bi bi-x-circle'></i></button></li>`);
+        obj.parentNode.insertAdjacentHTML("beforebegin", `<li class='list-group-item d-flex align-items-center' id='new-filter-word-${tempElement}'><input type='text' class='form-control flex-grow-1 me-2' id='new-filter-word-input-${tempElement}' aria-label='new-filter-element' placeholder='Enter new filter element'/><button type='button' id='new-filter-add-button-${tempElement}' onclick=\"submitChange(this, ${index})\" class='btn btn-outline-success me-2'><i class='bi bi-check-circle'></i></button><button type='button' onclick=\"this.parentNode.parentNode.removeChild(this.parentNode)\" class='btn btn-outline-danger'><i class='bi bi-x-circle'></i></button></li>`);
         tempElement += 1;
     } else {
         const input_name = document.querySelector("#input-name-" + index);
@@ -36,7 +36,7 @@ async function submitChange(obj, index) {
         body["add_filter"] = new_word;
         const response = await sendRequest('/api/changeProfile', body);
         if (response.ok) {
-            document.querySelector("#new-filter-word-" + temp_word_id).innerHTML = `<div class=\"flex-grow-1 d-flex align-items-center\">${new_word}</div><button type=\"button\" id=\"filter-remove-button-{{ index }}\" onclick=\"submitChange(this, ${index})\" class=\"btn btn-outline-danger\"><i class=\"bi bi-x-circle\"></i></button>`;
+            document.querySelector("#new-filter-word-" + temp_word_id).innerHTML = `<div class=\"flex-grow-1 text-break me-2\">${new_word}</div><button type=\"button\" id=\"filter-remove-button-{{ index }}\" onclick=\"submitChange(this, ${index})\" class=\"btn btn-outline-danger  style="height: 38px; width: 42px;"\"><i class=\"bi bi-x-circle\"></i></button>`;
         } else {
             new_word_element.setCustomValidity("Filter word already exists");
             addValidityListenerOnce(new_word_element);
@@ -104,7 +104,7 @@ async function deleteProfile(index) {
     }
 }
 
-function copyTokenURL(element, token) {
+function copyTokenURL(element, index) {
     function returnToInitial() {
         element.innerHTML = "<i class='bi bi-clipboard'></i>";
         element.classList.remove("btn-success");
@@ -112,7 +112,8 @@ function copyTokenURL(element, token) {
         element.classList.add("btn-outline-secondary");
     }
 
-    const textToCopy = location.href.split('?')[0].split('#')[0] + `filtered/${token}`;
+    const tokenInputElement = document.querySelector(`#input-token-${index}`);
+    const textToCopy = location.href.split('?')[0].split('#')[0] + `filtered/${tokenInputElement.value}`;
     navigator.clipboard.writeText(textToCopy)
         .then(() => {
             element.innerHTML = "<i class='bi bi-clipboard-check'></i>";

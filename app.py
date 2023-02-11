@@ -141,13 +141,13 @@ def api_new_profile():
     db_user = User.query.filter_by(user_name=current_user).first()
     new_profile_data = request.json
     existing_profile = ICalProfile.query.filter_by(user_id=db_user.user_id,
-                                                   profile_name=new_profile_data["new_profile_name"]).first()
+                                                   profile_name=new_profile_data["new_profile_name"].strip()).first()
     if existing_profile:
         return jsonify({"msg": "Name exists"}), 401
     existing_token = ICalProfile.query.filter_by(token=new_profile_data["new_token"]).first()
     if existing_token:
         return jsonify({"msg": "Token exists"}), 401
-    new_profile_element = ICalProfile(profile_name=new_profile_data["new_profile_name"],
+    new_profile_element = ICalProfile(profile_name=new_profile_data["new_profile_name"].strip(),
                                       i_cal_url=new_profile_data["new_ical_url"], token=new_profile_data["new_token"],
                                       user_id=db_user.user_id)
     db.session.add(new_profile_element)
@@ -305,6 +305,6 @@ def register():
 
 
 if __name__ == "__main__":
-    app.run(host="ical-buddy", port=5000)
+    app.run(host="localhost", port=5000)
     with app.app_context():
         app.add_url_rule('/favicon.ico', redirect_to=url_for('static', filename='favicon.ico'))
