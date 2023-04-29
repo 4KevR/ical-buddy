@@ -4,3 +4,4 @@ migrations/
 .idea
 __pycache__/
 ical-buddy-env/
+env/

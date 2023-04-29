@@ -4,6 +4,7 @@ import requests
 import re
 
 from datetime import datetime, timedelta, timezone
+from icalendar import Calendar
 
 from flask import Flask, jsonify, send_file, request, render_template, make_response, redirect, url_for
 from flask_migrate import Migrate
@@ -294,11 +295,15 @@ def send_filtered_ical(token):
     try:
         raw_ical = requests.get(ical.i_cal_url)
         ical_content = raw_ical.content.decode("utf-8")
-        delimiter = "BEGIN"
-        event_list = [delimiter + e for e in ical_content.split(delimiter) if e]
-        filtered_event_list = [e for e in event_list if not any(t in e for t in personal_filters)]
-        response = "".join(filtered_event_list)
-        return send_file(io.BytesIO(bytes(response, "utf-8")), mimetype="text/calendar", download_name="calendar.ics"), 200
+        parsed_ical = Calendar.from_ical(ical_content)
+        composed_ical = Calendar()
+        for component in parsed_ical.walk():
+            if component.name == "VEVENT":
+                if any(filter_string in component.get("SUMMARY") for filter_string in personal_filters):
+                    continue
+            composed_ical.add_component(component)
+        response = composed_ical.to_ical()
+        return send_file(io.BytesIO(response), mimetype="text/calendar", download_name="calendar.ics"), 200
     except Exception:
         return jsonify({"msg": "Could not fetch iCal data"}), 400
 
