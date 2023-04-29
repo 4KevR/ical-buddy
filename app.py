@@ -301,7 +301,8 @@ def send_filtered_ical(token):
             if component.name == "VEVENT":
                 if any(filter_string in component.get("SUMMARY") for filter_string in personal_filters):
                     continue
-            composed_ical.add_component(component)
+            if component.name != "VCALENDAR":
+                composed_ical.add_component(component)
         response = composed_ical.to_ical()
         return send_file(io.BytesIO(response), mimetype="text/calendar", download_name="calendar.ics"), 200
     except Exception:
