@@ -1,7 +1,7 @@
 requests==2.31.0
 flask==2.2.5
 flask-migrate==4.0.1
-Werkzeug==2.2.3
+Werkzeug==2.3.8
 SQLAlchemy==1.4.46
 alembic==1.9.1
 flask-jwt-extended==4.4.4
